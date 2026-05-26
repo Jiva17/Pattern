@@ -1,0 +1,28 @@
+def naive_search(text, pattern):
+    """
+    Naïve Pattern Matching Algorithm
+    Time Complexity: Best O(n), Worst O(nm)
+    Space Complexity: O(1)
+    """
+    n = len(text)
+    m = len(pattern)
+    matches = []
+
+    for i in range(n - m + 1):          # Slide pattern over text
+        j = 0
+        while j < m and text[i + j] == pattern[j]:
+            j += 1
+        if j == m:                        # Full match found
+            matches.append(i)
+
+    return matches
+
+
+# ── Test ──────────────────────────────────────────────
+if __name__ == "__main__":
+    text    = "AABAACAADAABAABA"
+    pattern = "AABA"
+    result  = naive_search(text, pattern)
+    print(f"Pattern : '{pattern}'")
+    print(f"Text    : '{text}'")
+    print(f"Found at indices: {result}")
