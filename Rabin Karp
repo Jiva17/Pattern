@@ -1,0 +1,49 @@
+def rabin_karp_search(text, pattern, base=256, prime=101):
+    """
+    Rabin-Karp Algorithm (Rolling Hash)
+    Time Complexity: Best/Average O(n+m), Worst O(nm) — hash collisions
+    Space Complexity: O(1)
+
+    base  — number of characters in the alphabet (256 for ASCII)
+    prime — a prime number used to reduce hash collisions
+    """
+    n = len(text)
+    m = len(pattern)
+    matches = []
+
+    if m > n:
+        return matches
+
+    # h = base^(m-1) % prime  →  used to remove the leading digit
+    h = pow(base, m - 1, prime)
+
+    # Compute initial hash values for pattern and first window of text
+    pattern_hash = 0
+    text_hash    = 0
+    for i in range(m):
+        pattern_hash = (base * pattern_hash + ord(pattern[i])) % prime
+        text_hash    = (base * text_hash    + ord(text[i]))    % prime
+
+    for i in range(n - m + 1):
+        # Hash match → verify character by character (avoid spurious hits)
+        if pattern_hash == text_hash:
+            if text[i:i + m] == pattern:   # Actual comparison
+                matches.append(i)
+
+        # Roll the hash: remove leading char, add next char
+        if i < n - m:
+            text_hash = (base * (text_hash - ord(text[i]) * h) + ord(text[i + m])) % prime
+            if text_hash < 0:
+                text_hash += prime          # Keep positive
+
+    return matches
+
+
+# ── Test ──────────────────────────────────────────────
+if __name__ == "__main__":
+    text    = "AABAACAADAABAABA"
+    pattern = "AABA"
+    result  = rabin_karp_search(text, pattern)
+    print(f"Pattern : '{pattern}'")
+    print(f"Text    : '{text}'")
+    print(f"Found at indices: {result}")
